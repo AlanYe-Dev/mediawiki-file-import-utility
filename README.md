@@ -30,8 +30,8 @@ bot:
   password: 7aCTEJJM6eitNpJqmfsaPfERZmsQcawh
 ```
 
-1. Optional: Prepare a list of import filename to ```import.txt```.
-2. Run **main.exe**.
+4. Optional: Prepare a list of import filename to ```import.txt```.
+5. Run **main.exe**.
 
 ### Development
 
