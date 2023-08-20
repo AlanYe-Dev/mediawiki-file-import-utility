@@ -37,4 +37,4 @@ Also, this requires ```$wgAllowCopyUploads = true;``` in the wiki's local settin
 
 ## Build
 Use PyInstaller to complete the build process.
-``` pyinstaller -F src/main.py```
+```pyinstaller -F src/main.py```
