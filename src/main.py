@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.3
+    Version: 0.4
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -10,6 +10,7 @@
 import requests
 import os
 import yaml
+import mwparserfromhell
 from urllib.parse import urlparse, parse_qs
 
 def extract_filename(url_or_text):
@@ -39,8 +40,39 @@ def extract_filename(url_or_text):
     
     return filename
 
+# Fetch page source code from MediaWiki API
+def get_page_content(to_wiki_url, page_title):
+    params = {
+        "action": "query",
+        "format": "json",
+        "titles": page_title,
+        "prop": "revisions",
+        "rvprop": "content"
+    }
+
+    response = requests.get(to_wiki_url, params=params)
+    data = response.json()
+    
+    # Extract page content
+    page_id = list(data['query']['pages'].keys())[0]
+    page = data['query']['pages'][page_id]
+    content = page['revisions'][0]['*']
+    
+    return content
+
+def extract_file_names(text):
+    file_names = []  # 用列表存储文件名
+    wikicode = mwparserfromhell.parse(text)
+    
+    for node in wikicode.filter_wikilinks():
+        if node.title.lower().startswith("file:"):
+            file_name = node.title[len("file:"):].strip()
+            file_names.append(file_name)
+    
+    return file_names
+
 # Startup message
-print("MediaWiki Import File Utility (by _Wr_)\nVersion: 0.3\n")
+print("MediaWiki Import File Utility (by _Wr_)\nVersion: 0.4\n")
 
 # Read config file
 # conf = yaml.load(open('./conf.yml'))
@@ -151,7 +183,7 @@ add_upload_filename = True
 count = 0
 
 print("[INFO] This tool can automatically extract the filename from strings, so all you need to do is to copy and paste the URL or the text into the input box or save it to a text file.")
-method = input("[INPUT] Please enter the method you want to use to import files (default: 1)\n1. Import from dialog\n2. Import from text file\n>")
+method = input("[INPUT] Please enter the method you want to use to import files (default: 1)\n1. Import from dialog\n2. Import from text file\n3. Import from an existing wiki page\n>")
 if method == '':
     method = 1
 else:
@@ -181,9 +213,44 @@ if method == 2:
     with open(file_name, 'r') as f:
         for line in f:
             count = count + 1
-            filename = extract_filename(line)
+            filename = extract_filename(add_upload_file)
             upload_file_name_list.append(filename)
     print(f"[INFO] Collected all filenames from {file_name}.")
+
+if method == 3:
+    wiki_page_input = True
+    wiki_page_count = 0
+    wiki_page_titles = []  # Store user input page titles
+    upload_file_name_list = []  # Store file names
+
+    while wiki_page_input:
+        wiki_page_count = wiki_page_count + 1
+        page_title = input("[INPUT] Please enter the title of the wiki page you want to import from (example: Main page):\n>")
+        if page_title == '' and wiki_page_count == 1:
+            # Show error and let the user input again
+            print("[ERROR] You must enter at least one page title!")
+            wiki_page_input = True
+        
+        if page_title == '' and wiki_page_count != 1:
+            # Finish input
+            wiki_page_input = False
+            wiki_page_count = wiki_page_count - 1
+            print("[INFO] Collected all titles of wiki pages.")
+        else:
+            wiki_page_titles.append(page_title)
+
+    # Iterate through user-inputted page titles and extract file names
+    for page_title in wiki_page_titles:
+        # Get page source code
+        wiki_text = get_page_content(to_wiki_url, page_title)
+        # Extract file names
+        file_names = extract_file_names(wiki_text)
+        # Add file names to upload_file_name_list
+        upload_file_name_list.extend(file_names)
+    
+    # Save the count of extracted file names
+    count = len(upload_file_name_list)
+
 
 print("[INFO] Start uploading...")
 upload_count = 0
