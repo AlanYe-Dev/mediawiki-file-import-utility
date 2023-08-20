@@ -245,6 +245,7 @@ if method == 3:
         wiki_text = get_page_content(to_wiki_url, page_title)
         # Extract file names
         file_names = extract_file_names(wiki_text)
+        file_names = file_names.replace(" ", "_")
         # Add file names to upload_file_name_list
         upload_file_name_list.extend(file_names)
     
