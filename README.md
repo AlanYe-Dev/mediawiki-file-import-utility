@@ -23,9 +23,15 @@ Also, this requires ```$wgAllowCopyUploads = true;``` in the wiki's local settin
 
 1. Download the latest build version from [here](https://github.com/AlanYe-Dev/mediawiki-file-import-utility/actions/workflows/pyinstaller-windows.yml).
 2. Duplicate ```conf.yml.example```, rename it to ```conf.yml```.
-3. Fill in the Bot credentials previous fetched.
-4. Optional: Prepare a list of import filename to ```import.txt```.
-5. Run **main.exe**.
+3. Fill in the Bot credentials previous fetched. Example:
+```
+bot:
+  username: xxx@xxx
+  password: 7aCTEJJM6eitNpJqmfsaPfERZmsQcawh
+```
+
+1. Optional: Prepare a list of import filename to ```import.txt```.
+2. Run **main.exe**.
 
 ### Development
 

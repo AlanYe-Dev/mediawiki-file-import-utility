@@ -1,6 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
+    Version: 0.3
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -42,11 +43,12 @@ def extract_filename(url_or_text):
     return filename
 
 # Startup message
-print ("MediaWiki Import File Utility (by _Wr_)\nVersion: 0.2\n")
+print ("MediaWiki Import File Utility (by _Wr_)\nVersion: 0.3\n")
 
 # Read config file
 #conf = yaml.load(open('./conf.yml'))
 file_name = 'conf.yml'
+eg_file_name = 'conf.yml.exmaple'
 
 # Check if config file exists
 if os.path.isfile(file_name):
@@ -54,9 +56,15 @@ if os.path.isfile(file_name):
     with open('conf.yml', 'r') as config_file:
         conf = yaml.safe_load(config_file)
 else:
-    print(f"[ERROR] Did not detect config file '{file_name}'.\nPlease rename 'conf.yml.example' to 'conf.yml' and fill in the required fields.")
-    input ("Press Enter to exit...")
-    exit()
+    print(f"[WARNING] Did not detect config file '{file_name}'.\n[WARNING] Please rename 'conf.yml.example' to 'conf.yml' and fill in the required fields.\n[WARNING] For more information, see https://github.com/AlanYe-Dev/mediawiki-file-import-utility#readme")
+    if os.path.isfile(eg_file_name):
+        input ("Press Enter to exit...")
+        exit()
+    else:
+        with open("conf.yml.exmaple","w") as file:
+            file.write("# Please enter the credentials from Special:BotPasswords\n# DO NOT share this file for security reasons.\n# For more information, see https://github.com/AlanYe-Dev/mediawiki-file-import-utility#readme\nbot:\n  username: \n  password: ")
+        input ("Press Enter to exit...")
+        exit()
 
 
 

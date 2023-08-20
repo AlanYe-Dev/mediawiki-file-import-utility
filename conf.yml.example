@@ -1,5 +1,6 @@
 # Please enter the credentials from Special:BotPasswords
-# Do not share this file for privacy reasons.
+# DO NOT share this file for security reasons.
+# For more information, see https://github.com/AlanYe-Dev/mediawiki-file-import-utility#readme
 bot:
   username: 
   password: 
