@@ -20,7 +20,7 @@ jobs:
       with:
         path: src
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
-        name: mediawiki-file-import
+        name: mwfileimport-win
         path: src/dist/windows
