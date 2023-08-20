@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4
+    Version: 0.4.1
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -72,7 +72,7 @@ def extract_file_names(text):
     return file_names
 
 # Startup message
-print("MediaWiki Import File Utility (by _Wr_)\nVersion: 0.4\n")
+print("MediaWiki Import File Utility (by _Wr_)\nVersion: 0.4.1\n")
 
 # Read config file
 # conf = yaml.load(open('./conf.yml'))
@@ -183,7 +183,7 @@ add_upload_filename = True
 count = 0
 
 print("[INFO] This tool can automatically extract the filename from strings, so all you need to do is to copy and paste the URL or the text into the input box or save it to a text file.")
-method = input("[INPUT] Please enter the method you want to use to import files (default: 1)\n1. Import from dialog\n2. Import from text file\n3. Import from an existing wiki page\n>")
+method = input("[INPUT] Please enter the method you want to use to import files (default: 1)\n1. Import from dialog\n2. Import from text file\n3. Import from an existing wiki page (example: Main_page)\n>")
 if method == '':
     method = 1
 else:
@@ -225,10 +225,11 @@ if method == 3:
 
     while wiki_page_input:
         wiki_page_count = wiki_page_count + 1
-        page_title = input("[INPUT] Please enter the title of the wiki page you want to import from (example: Main page):\n>")
+        page_title = input(f"[INPUT] Please enter the title of the wiki page you want to import from ({wiki_page_count}):\n>")
         if page_title == '' and wiki_page_count == 1:
             # Show error and let the user input again
             print("[ERROR] You must enter at least one page title!")
+            wiki_page_count = 0
             wiki_page_input = True
         
         if page_title == '' and wiki_page_count != 1:
@@ -238,19 +239,22 @@ if method == 3:
             print("[INFO] Collected all titles of wiki pages.")
         else:
             wiki_page_titles.append(page_title)
+            wiki_page_input = True
 
     # Iterate through user-inputted page titles and extract file names
     for page_title in wiki_page_titles:
         # Get page source code
         wiki_text = get_page_content(to_wiki_url, page_title)
-        # Extract file names
+        # Extract file names from the source code
         file_names = extract_file_names(wiki_text)
-        file_names = file_names.replace(" ", "_")
-        # Add file names to upload_file_name_list
-        upload_file_name_list.extend(file_names)
+        # Replace spaces with underscores in file names and add them to upload_file_name_list
+        for filename in file_names:
+            filename_with_underscore = filename.replace(" ", "_")
+            upload_file_name_list.append(filename_with_underscore)
     
     # Save the count of extracted file names
     count = len(upload_file_name_list)
+
 
 
 print("[INFO] Start uploading...")
