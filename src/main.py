@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4.1
+    Version: 0.4.2
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -72,7 +72,7 @@ def extract_file_names(text):
     return file_names
 
 # Startup message
-print("MediaWiki Import File Utility\nVersion: 0.4.1\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
+print("MediaWiki Import File Utility\nVersion: 0.4.2\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
 # conf = yaml.load(open('./conf.yml'))
