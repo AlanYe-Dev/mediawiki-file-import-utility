@@ -1,4 +1,5 @@
 # MediaWiki File Import Utility 
+[![Package Application with Pyinstaller](https://github.com/AlanYe-Dev/mediawiki-file-import-utility/actions/workflows/pyinstaller-windows.yml/badge.svg)](https://github.com/AlanYe-Dev/mediawiki-file-import-utility/actions/workflows/pyinstaller-windows.yml)
 A utility which can easily import file from another wiki.
 
 ![Importing files from an existed wiki page](imgs/preview_import_from_wiki_page.png)
