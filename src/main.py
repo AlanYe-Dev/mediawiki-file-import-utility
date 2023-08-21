@@ -72,7 +72,7 @@ def extract_file_names(text):
     return file_names
 
 # Startup message
-print("MediaWiki Import File Utility (by _Wr_)\nVersion: 0.4.1\n")
+print("MediaWiki Import File Utility\nVersion: 0.4.1\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
 # conf = yaml.load(open('./conf.yml'))
