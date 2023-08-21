@@ -1,6 +1,8 @@
 # MediaWiki File Import Utility 
 A utility which can easily import file from another wiki.
 
+![Importing files from an existed wiki page](imgs/preview_import_from_wiki_page.png)
+
 ## Requirements
 
 - Destination Wiki API URL (Example: https://example.com/w/api.php)
