@@ -213,7 +213,7 @@ if method == 2:
     with open(file_name, 'r') as f:
         for line in f:
             count = count + 1
-            filename = extract_filename(add_upload_file)
+            filename = extract_filename(line)
             upload_file_name_list.append(filename)
     print(f"[INFO] Collected all filenames from {file_name}.")
 
