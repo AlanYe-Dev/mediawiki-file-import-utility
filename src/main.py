@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4.3
+    Version: 0.4.3 patch 1
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -72,7 +72,7 @@ def extract_file_names(text):
     return file_names
 
 # Startup message
-print("MediaWiki Import File Utility\nVersion: 0.4.3\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
+print("MediaWiki Import File Utility\nVersion: 0.4.3 patch 1\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
 # conf = yaml.load(open('./conf.yml'))
@@ -124,9 +124,12 @@ if "op://" in lgpassword or "op://" in lgname:
     
     if "[ERROR]" in lgname or "[ERROR]" in lgpassword:
         print("[ERROR] 1Password credentials retrieval failed. Please check your secret reference URI (op://) and try again.")
-
+        input("Press Enter to exit...")
+        exit()
     else:
         print("[INFO] 1Password credentials retrieved.")
+
+print(f"[INFO] Logged in as: {lgname}")
 
 # For debug purposes
 # print(lgname, lgpassword)
