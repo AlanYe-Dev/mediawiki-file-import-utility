@@ -23,6 +23,8 @@ Also, this requires ```$wgAllowCopyUploads = true;``` in the wiki's local settin
 4. Remember to add upload permissions
 5. Save the bot passwords, it should be like ```xxx@xxx``` and a random key.
 
+optional: You can save your credentials to 1Password, and fill in ```conf.yml``` with secret reference URIs (op://).
+
 ### Windows
 
 1. Download the latest build version from [here](https://github.com/AlanYe-Dev/mediawiki-file-import-utility/actions/workflows/pyinstaller-windows.yml).

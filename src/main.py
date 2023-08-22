@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4.2
+    Version: 0.4.3
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -72,7 +72,7 @@ def extract_file_names(text):
     return file_names
 
 # Startup message
-print("MediaWiki Import File Utility\nVersion: 0.4.2\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
+print("MediaWiki Import File Utility\nVersion: 0.4.3\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
 # conf = yaml.load(open('./conf.yml'))
@@ -107,6 +107,29 @@ else:
 
 lgname = conf['bot']['username']
 lgpassword = conf['bot']['password']
+
+if "op://" in lgpassword or "op://" in lgname:
+    print("[INFO] Detected 1Password credentials. Attempting to retrieve...")
+    import subprocess
+    if "op://" in lgpassword and "op://" in lgname:
+        op_credentials = subprocess.check_output(f"op read {lgname} && op read {lgpassword}", shell=True, text=True)
+        lgname = op_credentials.split('\n')[0]
+        lgpassword = op_credentials.split('\n')[1]
+
+    if "op://" in lgpassword and "op://" not in lgname:
+        lgpassword = subprocess.check_output(f"op read {lgpassword}", shell=True, text=True)
+
+    if "op://" in lgname and "op://" not in lgpassword:
+        lgname = subprocess.check_output(f"op read {lgname}", shell=True, text=True)
+    
+    if "[ERROR]" in lgname or "[ERROR]" in lgpassword:
+        print("[ERROR] 1Password credentials retrieval failed. Please check your secret reference URI (op://) and try again.")
+
+    else:
+        print("[INFO] 1Password credentials retrieved.")
+
+# For debug purposes
+# print(lgname, lgpassword)
 
 to_wiki_url = input("[INPUT] Please enter the API URL of the Wiki you want to upload to (default: https://sonicpedia.org/w/api.php): \n>")
 if to_wiki_url == '':
@@ -256,7 +279,7 @@ if method == 3:
     count = len(upload_file_name_list)
 
 
-
+print ("")
 print("[INFO] Start uploading...")
 upload_count = 0
 success_count = 0
