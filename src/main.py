@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4.4
+    Version: 0.4.5
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -77,7 +77,7 @@ def extract_file_names(text):
 
 # Startup message
 print(
-    "MediaWiki Import File Utility\nVersion: 0.4.4\n"
+    "MediaWiki Import File Utility\nVersion: 0.4.5\n"
     "https://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
@@ -327,10 +327,9 @@ for title in upload_file_name_list:
         success_count = success_count + 1
 
 print(f"[INFO] Process completed ({upload_count}/{count}): Successed: {success_count}, Failed: {failed_count}")
-# I want to add a feature that repeat the upwards' process, please help me
-# Please add the following code
-# if input("[INPUT] Do you want to repeat the process? (y/n)\n>") == 'y':
-#     os.system('python main.py')
-# else:
-#     input("Press Enter to exit...")
-input("Press Enter to exit...")
+
+if input("[INPUT] Do you want to repeat the process? (y/n)\n>") == 'y':
+    os.system('python main.py')
+else:
+    input("Press Enter to exit...")
+    exit()
