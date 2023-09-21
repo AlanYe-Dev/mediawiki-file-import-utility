@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4.3 patch 1
+    Version: 0.4.4
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -13,66 +13,72 @@ import yaml
 import mwparserfromhell
 from urllib.parse import urlparse, parse_qs
 
+
 def extract_filename(url_or_text):
     # Try to parse URL
     parsed_url = urlparse(url_or_text)
-    
-    # Query filename from URL query parameters
+
+    # Query wiki_filename from URL query parameters
     if 'wpDestFile' in parse_qs(parsed_url.query):
-        filename = parse_qs(parsed_url.query)['wpDestFile'][0]
+        wiki_filename = parse_qs(parsed_url.query)['wpDestFile'][0]
     else:
-        # Extract filename from URL path
+        # Extract wiki_filename from URL path
         path_parts = parsed_url.path.split('/')
         for part in reversed(path_parts):
             if part:
                 # Remove "File:" prefix if present
                 if part.startswith("File:"):
-                    filename = part[5:]
+                    wiki_filename = part[5:]
                 else:
-                    filename = part
+                    wiki_filename = part
                 break
         else:
-            # Return None if filename cannot be extracted
+            # Return None if wiki_filename cannot be extracted
             return None
-    
+
     # Replace space with underscore
-    filename = filename.replace(" ", "_")
-    
-    return filename
+    wiki_filename = wiki_filename.replace(" ", "_")
+
+    return wiki_filename
+
 
 # Fetch page source code from MediaWiki API
-def get_page_content(to_wiki_url, page_title):
+def get_page_content(destination_wiki_url, wiki_page_title):
     params = {
         "action": "query",
         "format": "json",
-        "titles": page_title,
+        "titles": wiki_page_title,
         "prop": "revisions",
         "rvprop": "content"
     }
 
-    response = requests.get(to_wiki_url, params=params)
+    response = requests.get(destination_wiki_url, params=params)
     data = response.json()
-    
+
     # Extract page content
     page_id = list(data['query']['pages'].keys())[0]
     page = data['query']['pages'][page_id]
     content = page['revisions'][0]['*']
-    
+
     return content
 
+
 def extract_file_names(text):
-    file_names = []  # 用列表存储文件名
+    wiki_filename_list = []  # 用列表存储文件名
     wikicode = mwparserfromhell.parse(text)
-    
+
     for node in wikicode.filter_wikilinks():
         if node.title.lower().startswith("file:"):
-            file_name = node.title[len("file:"):].strip()
-            file_names.append(file_name)
-    
-    return file_names
+            wiki_filename_process = node.title[len("file:"):].strip()
+            wiki_filename_list.append(wiki_filename_process)
+
+    return wiki_filename_list
+
 
 # Startup message
-print("MediaWiki Import File Utility\nVersion: 0.4.3 patch 1\nhttps://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
+print(
+    "MediaWiki Import File Utility\nVersion: 0.4.4\n"
+    "https://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
 # conf = yaml.load(open('./conf.yml'))
@@ -111,6 +117,7 @@ lgpassword = conf['bot']['password']
 if "op://" in lgpassword or "op://" in lgname:
     print("[INFO] Detected 1Password credentials. Attempting to retrieve...")
     import subprocess
+
     if "op://" in lgpassword and "op://" in lgname:
         op_credentials = subprocess.check_output(f"op read {lgname} && op read {lgpassword}", shell=True, text=True)
         lgname = op_credentials.split('\n')[0]
@@ -121,9 +128,11 @@ if "op://" in lgpassword or "op://" in lgname:
 
     if "op://" in lgname and "op://" not in lgpassword:
         lgname = subprocess.check_output(f"op read {lgname}", shell=True, text=True)
-    
+
     if "[ERROR]" in lgname or "[ERROR]" in lgpassword:
-        print("[ERROR] 1Password credentials retrieval failed. Please check your secret reference URI (op://) and try again.")
+        print(
+            "[ERROR] 1Password credentials retrieval failed. Please check your secret reference URI (op://) and try "
+            "again.")
         input("Press Enter to exit...")
         exit()
     else:
@@ -134,7 +143,9 @@ print(f"[INFO] Logged in as: {lgname}")
 # For debug purposes
 # print(lgname, lgpassword)
 
-to_wiki_url = input("[INPUT] Please enter the API URL of the Wiki you want to upload to (default: https://sonicpedia.org/w/api.php): \n>")
+to_wiki_url = input(
+    "[INPUT] Please enter the API URL of the Wiki you want to upload to (default: https://sonicpedia.org/w/api.php): "
+    "\n>")
 if to_wiki_url == '':
     to_wiki_url = 'https://sonicpedia.org/w/api.php'
 
@@ -199,7 +210,8 @@ print("[INFO] Init Process completed")
 # upload_file_name_list = ['Please_dont_turn_into_Tropical_Jungle.jpg']
 # from_wiki_url = 'https://sonic.fandom.com/wiki/Special:FilePath/'
 
-from_wiki_url = input("[INPUT] Please enter the URL of the Wiki you want to import from (default: https://sonic.fandom.com/wiki/): \n>")
+from_wiki_url = input(
+    "[INPUT] Please enter the URL of the Wiki you want to import from (default: https://sonic.fandom.com/wiki/): \n>")
 if from_wiki_url == '':
     from_wiki_url = 'https://sonic.fandom.com/wiki/'
 print(f"[INFO] Source Wiki URL: {from_wiki_url}")
@@ -208,8 +220,12 @@ upload_file_name_list = []
 add_upload_filename = True
 count = 0
 
-print("[INFO] This tool can automatically extract the filename from strings, so all you need to do is to copy and paste the URL or the text into the input box or save it to a text file.")
-method = input("[INPUT] Please enter the method you want to use to import files (default: 1)\n1. Import from dialog\n2. Import from text file\n3. Import from an existing wiki page (example: Main_page)\n>")
+print(
+    "[INFO] This tool can automatically extract the filename from strings, so all you need to do is to copy and paste "
+    "the URL or the text into the input box or save it to a text file.")
+method = input(
+    "[INPUT] Please enter the method you want to use to import files (default: 1)\n1. Import from dialog\n2. Import "
+    "from text file\n3. Import from an existing wiki page (example: Main_page)\n>")
 if method == '':
     method = 1
 else:
@@ -233,7 +249,8 @@ if method == 1:
             upload_file_name_list.append(filename)
 
 if method == 2:
-    file_name = input("[INPUT] Please enter the filename of the text file you want to import from (default: import.txt): \n>")
+    file_name = input(
+        "[INPUT] Please enter the filename of the text file you want to import from (default: import.txt): \n>")
     if file_name == '':
         file_name = 'import.txt'
     with open(file_name, 'r') as f:
@@ -251,13 +268,14 @@ if method == 3:
 
     while wiki_page_input:
         wiki_page_count = wiki_page_count + 1
-        page_title = input(f"[INPUT] Please enter the title of the wiki page you want to import from ({wiki_page_count}):\n>")
+        page_title = input(
+            f"[INPUT] Please enter the title of the wiki page you want to import from ({wiki_page_count}):\n>")
         if page_title == '' and wiki_page_count == 1:
             # Show error and let the user input again
             print("[ERROR] You must enter at least one page title!")
             wiki_page_count = 0
             wiki_page_input = True
-        
+
         if page_title == '' and wiki_page_count != 1:
             # Finish input
             wiki_page_input = False
@@ -277,12 +295,10 @@ if method == 3:
         for filename in file_names:
             filename_with_underscore = filename.replace(" ", "_")
             upload_file_name_list.append(filename_with_underscore)
-    
+
     # Save the count of extracted file names
     count = len(upload_file_name_list)
 
-
-print ("")
 print("[INFO] Start uploading...")
 upload_count = 0
 success_count = 0
@@ -311,4 +327,10 @@ for title in upload_file_name_list:
         success_count = success_count + 1
 
 print(f"[INFO] Process completed ({upload_count}/{count}): Successed: {success_count}, Failed: {failed_count}")
+# I want to add a feature that repeat the upwards' process, please help me
+# Please add the following code
+# if input("[INPUT] Do you want to repeat the process? (y/n)\n>") == 'y':
+#     os.system('python main.py')
+# else:
+#     input("Press Enter to exit...")
 input("Press Enter to exit...")
