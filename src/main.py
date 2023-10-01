@@ -1,11 +1,12 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4.5
+    Version: 0.4.6
 
     Foundations:
      - MediaWiki API Demos (MIT license)
 """
+import sys
 
 import requests
 import os
@@ -77,7 +78,7 @@ def extract_file_names(text):
 
 # Startup message
 print(
-    "MediaWiki Import File Utility\nVersion: 0.4.5\n"
+    "MediaWiki Import File Utility\nVersion: 0.4.6\n"
     "https://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
@@ -323,13 +324,16 @@ for title in upload_file_name_list:
         print(f"[ERROR] {DATA['error']['code']}: {DATA['error']['info']}")
         failed_count = failed_count + 1
     else:
-        print(f"[INFO] Upload process ({upload_count}/{count}): {title} completed")
+        print(f"[INFO] Upload process ({upload_count}/{count}): {title} completed", end="\r")
         success_count = success_count + 1
 
-print(f"[INFO] Process completed ({upload_count}/{count}): Successed: {success_count}, Failed: {failed_count}")
+if count == 1:
+    print(f"\n[INFO] Process completed ({upload_count}/{count}): Completed: {success_count}, Failed: {failed_count}")
+else:
+    print(f"[INFO] Process completed ({upload_count}/{count}): Completed: {success_count}, Failed: {failed_count}")
 
 if input("[INPUT] Do you want to repeat the process? (y/n)\n>") == 'y':
-    os.system('python main.py')
+    os.execl(sys.executable, f'"{sys.executable}"', *sys.argv)
 else:
     input("Press Enter to exit...")
     exit()
