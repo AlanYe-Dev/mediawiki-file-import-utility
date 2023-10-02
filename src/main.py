@@ -1,7 +1,7 @@
 """
     MediaWiki Import File Utility
     Author: _Wr_
-    Version: 0.4.6
+    Version: 0.4.7
 
     Foundations:
      - MediaWiki API Demos (MIT license)
@@ -14,6 +14,7 @@ import yaml
 import mwparserfromhell
 from urllib.parse import urlparse, parse_qs
 
+version = "0.4.7"
 
 def extract_filename(url_or_text):
     # Try to parse URL
@@ -76,9 +77,14 @@ def extract_file_names(text):
     return wiki_filename_list
 
 
+def exit_request():
+    input("Press Enter to exit...")
+    exit()
+
+
 # Startup message
 print(
-    "MediaWiki Import File Utility\nVersion: 0.4.6\n"
+    f"MediaWiki Import File Utility\nVersion: {version}\n"
     "https://github.com/AlanYe-Dev/mediawiki-file-import-utility\n")
 
 # Read config file
@@ -106,38 +112,40 @@ else:
     if not os.path.isfile(eg_conf_filename):
         with open(eg_conf_filename, "w") as file:
             file.write(eg_conf_content)
-        input("Press Enter to exit...")
-        exit()
+        exit_request()
     else:
-        input("Press Enter to exit...")
-        exit()
+        exit_request()
 
 lgname = conf['bot']['username']
 lgpassword = conf['bot']['password']
 
+# Fetch Credentials from 1Password if conf.yaml contains op:// URI
 if "op://" in lgpassword or "op://" in lgname:
     print("[INFO] Detected 1Password credentials. Attempting to retrieve...")
-    import subprocess
+    try:
+        import subprocess
 
-    if "op://" in lgpassword and "op://" in lgname:
-        op_credentials = subprocess.check_output(f"op read {lgname} && op read {lgpassword}", shell=True, text=True)
-        lgname = op_credentials.split('\n')[0]
-        lgpassword = op_credentials.split('\n')[1]
+        if "op://" in lgpassword and "op://" in lgname:
+            op_credentials = subprocess.check_output(f"op read {lgname} && op read {lgpassword}", shell=True, text=True)
+            lgname = op_credentials.split('\n')[0]
+            lgpassword = op_credentials.split('\n')[1]
 
-    if "op://" in lgpassword and "op://" not in lgname:
-        lgpassword = subprocess.check_output(f"op read {lgpassword}", shell=True, text=True)
+        if "op://" in lgpassword and "op://" not in lgname:
+            lgpassword = subprocess.check_output(f"op read {lgpassword}", shell=True, text=True)
 
-    if "op://" in lgname and "op://" not in lgpassword:
-        lgname = subprocess.check_output(f"op read {lgname}", shell=True, text=True)
+        if "op://" in lgname and "op://" not in lgpassword:
+            lgname = subprocess.check_output(f"op read {lgname}", shell=True, text=True)
 
-    if "[ERROR]" in lgname or "[ERROR]" in lgpassword:
-        print(
-            "[ERROR] 1Password credentials retrieval failed. Please check your secret reference URI (op://) and try "
-            "again.")
-        input("Press Enter to exit...")
-        exit()
-    else:
-        print("[INFO] 1Password credentials retrieved.")
+        if "[ERROR]" in lgname or "[ERROR]" in lgpassword:
+            print(
+                "[ERROR] 1Password credentials retrieval failed. Please check your secret reference URI (op://) and try"
+                "again.")
+            exit_request()
+        else:
+            print("[INFO] 1Password credentials retrieved.")
+    except subprocess.CalledProcessError:
+        print("[ERROR] 1Password-CLI Process Error. Please try entering your credentials directly in conf.yaml. ")
+        exit_request()
 
 print(f"[INFO] Logged in as: {lgname}")
 
@@ -335,5 +343,4 @@ else:
 if input("[INPUT] Do you want to repeat the process? (y/n)\n>") == 'y':
     os.execl(sys.executable, f'"{sys.executable}"', *sys.argv)
 else:
-    input("Press Enter to exit...")
-    exit()
+    exit_request()
