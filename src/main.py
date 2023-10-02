@@ -66,7 +66,7 @@ def get_page_content(destination_wiki_url, wiki_page_title):
 
 
 def extract_file_names(text):
-    wiki_filename_list = []  # 用列表存储文件名
+    wiki_filename_list = []  # Save filenames in a list
     wikicode = mwparserfromhell.parse(text)
 
     for node in wikicode.filter_wikilinks():
